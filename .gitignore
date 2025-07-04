@@ -5,3 +5,4 @@
    data/tmp/
    *.pt
    debug_*.jpg
+dataset*
