@@ -3,6 +3,7 @@ import requests
 import zipfile
 import shutil
 from tqdm import tqdm
+import random
 
 dataset_url = 'https://universe.roboflow.com/ds/HJ1zhypP3Q?key=o5LXfvCbPV'
 
@@ -37,7 +38,6 @@ def main():
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
         zip_ref.extractall(dataset_dir)
     print("Архив распакован.")
-    os.remove(zip_path)
     # Удаление файлов без closeup в имени
     for subfolder in ['images', 'labels']:
         target_dir = os.path.join(dataset_dir, 'train', subfolder)
@@ -46,6 +46,53 @@ def main():
                 if 'closeup' not in fname:
                     os.remove(os.path.join(target_dir, fname))
     print("Удаление файлов не содержащих 'closeup' завершено.")
+
+    # Разделение на train/val/test
+    split_cfg = {'train': 0.7, 'val': 0.2, 'test': 0.1}  # можно менять проценты
+    shutil.move(os.path.join(dataset_dir, 'train'), os.path.join(dataset_dir, 'dataset'))
+    images_dir = os.path.join(dataset_dir, 'dataset', 'images')
+    labels_dir = os.path.join(dataset_dir, 'dataset', 'labels')
+    images = sorted([f for f in os.listdir(images_dir) if os.path.isfile(os.path.join(images_dir, f))])
+    random.shuffle(images)
+    n = len(images)
+    n_train = int(n * split_cfg['train'])
+    n_val = int(n * split_cfg['val'])
+    n_test = n - n_train - n_val
+    splits = (
+        ('train', images[:n_train]),
+        ('val', images[n_train:n_train+n_val]),
+        ('test', images[n_train+n_val:]),
+    )
+    for split, split_files in splits:
+        split_img_dir = os.path.join(dataset_dir, 'images', split)
+        split_lbl_dir = os.path.join(dataset_dir, 'labels', split)
+        os.makedirs(split_img_dir, exist_ok=True)
+        os.makedirs(split_lbl_dir, exist_ok=True)
+        for fname in split_files:
+            shutil.move(os.path.join(images_dir, fname), os.path.join(split_img_dir, fname))
+            label_name = os.path.splitext(fname)[0] + '.txt'
+            if os.path.exists(os.path.join(labels_dir, label_name)):
+                shutil.move(os.path.join(labels_dir, label_name), os.path.join(split_lbl_dir, label_name))
+    # Удаляем пустые исходные папки
+    shutil.rmtree(os.path.join(dataset_dir, 'dataset'))
+    
+    print("Датасет разделён на train/val/test.")
+
+    # Обновление data.yaml
+    yaml_path = os.path.join(dataset_dir, 'data.yaml')
+    if os.path.exists(yaml_path):
+        with open(yaml_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+        new_lines = [
+            f"train: ../{dataset_dir}/images/train\n",
+            f"val: ../{dataset_dir}/images/val\n",
+            f"test: ../{dataset_dir}/images/test\n"
+        ]
+        # Сохраняем остальные строки, начиная с 4-й
+        lines = new_lines + lines[3:]
+        with open(yaml_path, 'w', encoding='utf-8') as f:
+            f.writelines(lines)
+        print('Пути train/val/test в data.yaml обновлены.')
 
 if __name__ == '__main__':
     main()
