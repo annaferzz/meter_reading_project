@@ -8,7 +8,7 @@ import random
 dataset_url = 'https://universe.roboflow.com/ds/HJ1zhypP3Q?key=o5LXfvCbPV'
 
 def main():
-    dataset_dir = 'dataset'
+    dataset_dir = 'dataset_gaz'
     zip_path = 'dataset.zip'
     # Скачивание архива, если его нет
     if not os.path.exists(zip_path):
