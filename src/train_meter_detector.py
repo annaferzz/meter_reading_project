@@ -8,7 +8,7 @@ def train_meter_detector():
         epochs=100,
         imgsz=YOLO_CONFIG["img_size"],
         batch=16,
-        device=0,
+        device='cpu',
         project=str(RUNS_DIR),
         name='train_meter'
     )

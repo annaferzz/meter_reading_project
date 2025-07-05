@@ -94,5 +94,7 @@ def main():
             f.writelines(lines)
         print('Пути train/val/test в data.yaml обновлены.')
 
+    shutil.move(os.path.join(dataset_dir, 'data.yaml'), os.path.join(dataset_dir, 'dataset.yaml'))
+
 if __name__ == '__main__':
     main()
