@@ -10,8 +10,8 @@ PROCESSED_DATA_DIR = DATA_DIR / "processed"
 
 # Дополнительные пути и файлы проекта
 MODEL_WEIGHTS_PATH = PROJECT_ROOT / "runs" / "detect" / "train_meter" / "weights" / "best.pt"
-SAMPLE_IMAGE_PATH = PROJECT_ROOT / "dataset" / "test1.jpg"
-DATASET_YAML_PATH = PROJECT_ROOT / "dataset" / "dataset.yaml"
+SAMPLE_IMAGE_PATH = PROJECT_ROOT / "dataset_gaz" / "images" / "test" / "test1.jpg"
+DATASET_YAML_PATH = PROJECT_ROOT / "dataset_gaz" / "data.yaml"
 RUNS_DIR = PROJECT_ROOT / "runs" / "detect"
 
 # Временная директория для промежуточных кропов / артефактов
@@ -29,7 +29,7 @@ YOLO_CONFIG = {
     "img_size": 640,
     "conf_threshold": 0.5,
     "iou_threshold": 0.45,
-    "classes": ["water_meter"]
+    "classes": ["gas_meter"]
 }
 
 # Конфигурация OCR
