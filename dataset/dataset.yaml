@@ -1,7 +1,0 @@
-names:
-- water_meter
-- indications
-nc: 2
-test: C:\Users\Anna\meter_reading_project\dataset\images\test
-train: C:\Users\Anna\meter_reading_project\dataset\images\train
-val: C:\Users\Anna\meter_reading_project\dataset\images\val
